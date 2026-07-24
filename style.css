@@ -1,19 +1,359 @@
-/* إخفاء شريط التمرير للأقسام لبقاء الشكل ناعماً */
-.no-scrollbar::-webkit-scrollbar {
+/* --- الإعدادات العامة --- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Tajawal', sans-serif;
+    background-color: #121212;
+    color: #ffffff;
+    direction: rtl;
+    padding-bottom: 90px; /* مساحة للشريط السفلي */
+}
+
+/* --- الهيدر واللوجو --- */
+.header {
+    background: linear-gradient(180deg, #1f1f1f 0%, #121212 100%);
+    text-align: center;
+    padding: 25px 15px 15px;
+    border-bottom: 1px solid #2a2a2a;
+}
+
+.logo-img {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #e67e22;
+    box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3);
+    margin-bottom: 8px;
+}
+
+.header h1 {
+    font-size: 24px;
+    color: #e67e22;
+    font-weight: 700;
+}
+
+.header p {
+    font-size: 13px;
+    color: #aaa;
+    margin-top: 4px;
+}
+
+/* --- أقسام المنيو --- */
+.categories {
+    display: flex;
+    overflow-x: auto;
+    padding: 12px 15px;
+    gap: 10px;
+    background-color: #1a1a1a;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    scrollbar-width: none; /* إخفاء شريط التمرير */
+}
+
+.categories::-webkit-scrollbar {
     display: none;
 }
-.no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+
+.cat-btn {
+    background-color: #2a2a2a;
+    color: #ddd;
+    border: 1px solid #333;
+    padding: 8px 18px;
+    border-radius: 20px;
+    white-space: nowrap;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
-/* حركة بسيطة لظهور النوافذ المنبثقة */
-#customize-modal > div,
-#cart-modal > div {
-    animation: slideUp 0.25s ease-out;
+.cat-btn.active, .cat-btn:hover {
+    background-color: #e67e22;
+    color: #fff;
+    border-color: #e67e22;
+    font-weight: bold;
 }
 
-@keyframes slideUp {
-    from { transform: translateY(100%); }
-    to { transform: translateY(0); }
+/* --- قائمة الوجبات --- */
+.menu-container {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.meal-card {
+    background-color: #1e1e1e;
+    border-radius: 12px;
+    padding: 12px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    border: 1px solid #2c2c2c;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.meal-img {
+    width: 90px;
+    height: 90px;
+    border-radius: 10px;
+    object-fit: cover;
+    background-color: #2a2a2a;
+}
+
+.meal-details {
+    flex: 1;
+}
+
+.meal-details h3 {
+    font-size: 16px;
+    color: #fff;
+    margin-bottom: 4px;
+}
+
+.meal-desc {
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 10px;
+    line-height: 1.4;
+}
+
+.meal-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.meal-price {
+    font-size: 15px;
+    font-weight: bold;
+    color: #e67e22;
+}
+
+.add-btn {
+    background-color: #e67e22;
+    color: #fff;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-family: 'Tajawal', sans-serif;
+    font-weight: bold;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.add-btn:active {
+    transform: scale(0.95);
+}
+
+/* --- شريط السلة السفلي --- */
+.cart-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #1f1f1f;
+    border-top: 2px solid #e67e22;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 100;
+    box-shadow: 0 -4px 15px rgba(0,0,0,0.5);
+    cursor: pointer;
+}
+
+.view-cart-btn {
+    background-color: #e67e22;
+    color: #fff;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-family: 'Tajawal', sans-serif;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.cart-total-preview {
+    font-size: 13px;
+    color: #aaa;
+    text-align: left;
+}
+
+.cart-total-preview span {
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+}
+
+/* --- نافذة السلة والطلب (Modal) --- */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    z-index: 200;
+    justify-content: center;
+    align-items: flex-end;
+}
+
+.modal-content {
+    background-color: #1e1e1e;
+    width: 100%;
+    max-width: 500px;
+    border-radius: 20px 20px 0 0;
+    padding: 20px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+.close-btn {
+    position: absolute;
+    left: 20px;
+    top: 15px;
+    font-size: 24px;
+    color: #aaa;
+    cursor: pointer;
+}
+
+.modal-content h2 {
+    font-size: 18px;
+    color: #e67e22;
+    margin-bottom: 15px;
+}
+
+/* --- قائمة عناصر السلة --- */
+.cart-items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.cart-item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #2a2a2a;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.qty-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.qty-controls button {
+    background: #333;
+    color: #fff;
+    border: 1px solid #555;
+    width: 26px;
+    height: 26px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* --- تحديد الموقع والتوصيل --- */
+.location-box {
+    margin: 15px 0;
+    text-align: center;
+}
+
+.gps-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: 'Tajawal', sans-serif;
+    transition: background 0.3s;
+}
+
+.gps-btn:hover {
+    background-color: #218838;
+}
+
+.status-text {
+    font-size: 13px;
+    margin-top: 8px;
+    color: #f39c12;
+    font-weight: bold;
+}
+
+/* --- ملخص الحساب --- */
+.checkout-summary {
+    background: #2a2a2a;
+    padding: 12px;
+    border-radius: 8px;
+    margin: 15px 0;
+    color: #fff;
+}
+
+.checkout-summary p {
+    display: flex;
+    justify-content: space-between;
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+.checkout-summary hr {
+    border: 0;
+    border-top: 1px solid #444;
+    margin: 8px 0;
+}
+
+.checkout-summary h3 {
+    display: flex;
+    justify-content: space-between;
+    color: #e67e22;
+    margin-top: 8px;
+    font-size: 18px;
+}
+
+/* --- معلومات الزبون وإرسال الطلب --- */
+.customer-info input, .customer-info textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #444;
+    border-radius: 6px;
+    background: #121212;
+    color: #fff;
+    font-family: 'Tajawal', sans-serif;
+    box-sizing: border-box;
+}
+
+.send-order-btn {
+    width: 100%;
+    padding: 14px;
+    background-color: #e67e22;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: 'Tajawal', sans-serif;
+    margin-top: 5px;
 }
