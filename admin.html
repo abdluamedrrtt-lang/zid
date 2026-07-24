@@ -3,48 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة إدارة الأصناف والمنيو</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>لوحة إدارة الأصناف والمنيو | مطبخ زاد</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { padding: 20px; max-width: 600px; margin: 0 auto; background-color: #121212; color: #fff; }
+        .admin-card { background: #1e1e1e; padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #333; }
+        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .view-btn { background: #d9534f; color: white; padding: 8px 12px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: bold; }
+        input, textarea { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #444; border-radius: 8px; background: #2a2a2a; color: #fff; box-sizing: border-box; font-family: 'Tajawal', sans-serif; }
+        .save-btn { width: 100%; padding: 14px; background: #28a745; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; font-family: 'Tajawal', sans-serif; }
+        .item-row { display: flex; justify-content: space-between; align-items: center; background: #2a2a2a; padding: 12px; border-radius: 8px; margin-bottom: 10px; }
+        .delete-btn { background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-family: 'Tajawal', sans-serif; }
+    </style>
 </head>
-<body class="bg-gray-100 text-gray-800 p-4 max-w-4xl mx-auto">
+<body>
 
-    <header class="bg-gray-900 text-white p-4 rounded-xl shadow-md mb-6 flex justify-between items-center">
-        <div>
-            <h1 class="text-xl font-bold">⚙️ لوحة إدارة الأصناف والمنيو</h1>
-            <p class="text-xs text-gray-400">إضافة أصناف، تعديل الأسعار، وتحديد التوفر</p>
-        </div>
-        <a href="index.html" class="bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold">معاينة المنيو 👁️</a>
-    </header>
+    <div class="admin-header">
+        <h2>⚙️ لوحة إدارة الأصناف والمنيو</h2>
+        <a href="index.html" class="view-btn">معاينة المنيو 👁️</a>
+    </div>
 
-    <!-- نموذج إضافة وجبة جديدة -->
-    <section class="bg-white p-4 rounded-xl shadow-sm border mb-6">
-        <h2 class="font-bold text-md mb-3 text-red-600">+ إضافة وجبة جديدة</h2>
-        <form onsubmit="addNewItem(event)" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <input type="text" id="new-name" placeholder="اسم الوجبة" required class="border p-2 rounded-lg text-sm">
-            <input type="number" id="new-price" placeholder="السعر (د.ع)" required class="border p-2 rounded-lg text-sm">
-            <input type="text" id="new-category" placeholder="القسم (مثال: برغر، مقبلات، مشروبات)" required class="border p-2 rounded-lg text-sm">
-            <input type="text" id="new-image" placeholder="رابط صورة الوجبة (URL)" class="border p-2 rounded-lg text-sm">
-            <textarea id="new-desc" placeholder="وصف الوجبة والمكونات" class="border p-2 rounded-lg text-sm sm:col-span-2"></textarea>
-            
-            <button type="submit" class="bg-green-600 text-white py-2 rounded-lg font-bold text-sm sm:col-span-2 hover:bg-green-700">
-                حفظ وإضافة للمنيو
-            </button>
+    <div class="admin-card">
+        <h3 style="color: #e67e22; margin-bottom: 15px;">+ إضافة وجبة جديدة</h3>
+        <form id="add-meal-form">
+            <input type="text" id="meal-name" placeholder="اسم الوجبة (مثال: ريزو)" required>
+            <input type="number" id="meal-price" placeholder="السعر (د.ع) مثال: 6000" required>
+            <input type="text" id="meal-category" placeholder="القسم (مثال: ريزو، برغر، مقبلات)" required>
+            <input type="url" id="meal-image" placeholder="رابط صورة الوجبة (URL)" required>
+            <textarea id="meal-desc" placeholder="وصف الوجبة والمكونات"></textarea>
+            <button type="submit" class="save-btn">حفظ وإضافة للمنيو</button>
         </form>
-    </section>
+    </div>
 
-    <!-- قائمة الوجبات الحالية للتعديل والتحكم -->
-    <section class="bg-white p-4 rounded-xl shadow-sm border">
-        <h2 class="font-bold text-md mb-3">قائمة الأصناف الحالية</h2>
-        <div class="space-y-3" id="admin-items-list"></div>
-    </section>
+    <div class="admin-card">
+        <h3>قائمة الأصناف الحالية</h3>
+        <div id="admin-items-list" style="margin-top: 15px;">
+            <!-- تظهر الوجبات المضافة هنا -->
+        </div>
+    </div>
 
-    <script src="app.js"></script>
     <script>
-        // تشغيل عرض لوحة التحكم عند فتح الصفحة
-        document.addEventListener("DOMContentLoaded", () => {
-            if (typeof renderAdminPage === "function") renderAdminPage();
+        // جلب البيانات المخزنة
+        let menuData = JSON.parse(localStorage.getItem('zad_menu')) || [];
+
+        // عرض الوجبات في لوحة التحكم
+        function displayAdminItems() {
+            const list = document.getElementById('admin-items-list');
+            if (menuData.length === 0) {
+                list.innerHTML = '<p style="color:#888;">لا توجد وجبات مضافة حالياً.</p>';
+                return;
+            }
+            list.innerHTML = menuData.map((item, index) => `
+                <div class="item-row">
+                    <div>
+                        <strong>${item.name}</strong> - ${Number(item.price).toLocaleString()} د.ع <br>
+                        <small style="color:#aaa;">القسم: ${item.category}</small>
+                    </div>
+                    <button class="delete-btn" onclick="deleteMeal(${index})">حذف</button>
+                </div>
+            `).join('');
+        }
+
+        // إضافة وجبة جديدة
+        document.getElementById('add-meal-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('meal-name').value.trim();
+            const price = parseFloat(document.getElementById('meal-price').value);
+            const category = document.getElementById('meal-category').value.trim();
+            const image = document.getElementById('meal-image').value.trim();
+            const desc = document.getElementById('meal-desc').value.trim();
+
+            const newMeal = { name, price, category, image, desc };
+            
+            menuData.push(newMeal);
+            localStorage.setItem('zad_menu', JSON.stringify(menuData));
+
+            alert('✅ تم حفظ الوجبة بنجاح وإضافتها للمنيو!');
+            this.reset();
+            displayAdminItems();
         });
+
+        // حذف وجبة
+        function deleteMeal(index) {
+            if (confirm('هل أنت تأكد من حذف هذه الوجبة؟')) {
+                menuData.splice(index, 1);
+                localStorage.setItem('zad_menu', JSON.stringify(menuData));
+                displayAdminItems();
+            }
+        }
+
+        // عند التحميل الأول
+        displayAdminItems();
     </script>
 </body>
 </html>
