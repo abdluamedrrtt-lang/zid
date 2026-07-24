@@ -1,0 +1,19 @@
+/* إخفاء شريط التمرير للأقسام لبقاء الشكل ناعماً */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* حركة بسيطة لظهور النوافذ المنبثقة */
+#customize-modal > div,
+#cart-modal > div {
+    animation: slideUp 0.25s ease-out;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
