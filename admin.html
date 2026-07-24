@@ -3,144 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة إدارة المطبخ والطلبات</title>
+    <title>لوحة إدارة الأصناف والمنيو</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        @media print {
-            body * { visibility: hidden; }
-            #printable-receipt, #printable-receipt * { visibility: visible; }
-            #printable-receipt { position: absolute; left: 0; top: 0; width: 100%; }
-        }
-    </style>
 </head>
-<body class="bg-gray-900 text-white min-h-screen p-4 sm:p-6">
+<body class="bg-gray-100 text-gray-800 p-4 max-w-4xl mx-auto">
 
-    <!-- Header -->
-    <header class="flex justify-between items-center border-b border-gray-800 pb-4 mb-6">
+    <header class="bg-gray-900 text-white p-4 rounded-xl shadow-md mb-6 flex justify-between items-center">
         <div>
-            <h1 class="text-xl font-black text-red-500">نظام إدارة الطلبات والمطبخ (OMS)</h1>
-            <p class="text-xs text-gray-400">شاشة شغال المطبخ والتنبيهات المباشرة</p>
+            <h1 class="text-xl font-bold">⚙️ لوحة إدارة الأصناف والمنيو</h1>
+            <p class="text-xs text-gray-400">إضافة أصناف، تعديل الأسعار، وتحديد التوفر</p>
         </div>
-        <button onclick="enableAudio()" id="audio-btn" class="bg-yellow-500 text-black px-3 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1">
-            <i class="fa-solid fa-volume-high"></i> تفعيل التنبيه الصوتي
-        </button>
+        <a href="index.html" class="bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold">معاينة المنيو 👁️</a>
     </header>
 
-    <!-- الأجهزة القادمة / الطلبات -->
-    <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="admin-orders-list">
-        <!-- يتم التحميل هنا تلقائياً -->
-    </main>
+    <!-- نموذج إضافة وجبة جديدة -->
+    <section class="bg-white p-4 rounded-xl shadow-sm border mb-6">
+        <h2 class="font-bold text-md mb-3 text-red-600">+ إضافة وجبة جديدة</h2>
+        <form onsubmit="addNewItem(event)" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <input type="text" id="new-name" placeholder="اسم الوجبة" required class="border p-2 rounded-lg text-sm">
+            <input type="number" id="new-price" placeholder="السعر (د.ع)" required class="border p-2 rounded-lg text-sm">
+            <input type="text" id="new-category" placeholder="القسم (مثال: برغر، مقبلات، مشروبات)" required class="border p-2 rounded-lg text-sm">
+            <input type="text" id="new-image" placeholder="رابط صورة الوجبة (URL)" class="border p-2 rounded-lg text-sm">
+            <textarea id="new-desc" placeholder="وصف الوجبة والمكونات" class="border p-2 rounded-lg text-sm sm:col-span-2"></textarea>
+            
+            <button type="submit" class="bg-green-600 text-white py-2 rounded-lg font-bold text-sm sm:col-span-2 hover:bg-green-700">
+                حفظ وإضافة للمنيو
+            </button>
+        </form>
+    </section>
 
-    <!-- فاتورة غير ظاهرة مجهزة للطباعة الحرارية -->
-    <div id="printable-receipt" class="hidden text-black p-4 font-mono text-xs w-[80mm] mx-auto bg-white">
-        <div class="text-center mb-2">
-            <h2 class="font-bold text-sm">مطعم المطبخ السحابي</h2>
-            <p id="p-date"></p>
-        </div>
-        <hr class="border-black my-2">
-        <p><strong>الزبون:</strong> <span id="p-name"></span></p>
-        <p><strong>الهاتف:</strong> <span id="p-phone"></span></p>
-        <p><strong>العنوان:</strong> <span id="p-address"></span></p>
-        <hr class="border-black my-2">
-        <div id="p-items" class="space-y-1"></div>
-        <hr class="border-black my-2">
-        <p class="flex justify-between font-bold"><span>المجموع:</span><span id="p-total"></span></p>
-    </div>
+    <!-- قائمة الوجبات الحالية للتعديل والتحكم -->
+    <section class="bg-white p-4 rounded-xl shadow-sm border">
+        <h2 class="font-bold text-md mb-3">قائمة الأصناف الحالية</h2>
+        <div class="space-y-3" id="admin-items-list"></div>
+    </section>
 
-    <!-- ملف الصوت للتنبيه -->
-    <audio id="notification-sound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
-
+    <script src="app.js"></script>
     <script>
-        // المحاكاة المباشرة للطلبات الواردة للمطبخ
-        let audioEnabled = false;
-
-        function enableAudio() {
-            const sound = document.getElementById("notification-sound");
-            sound.play().then(() => {
-                sound.pause();
-                audioEnabled = true;
-                document.getElementById("audio-btn").className = "bg-green-600 text-white px-3 py-1.5 rounded-lg font-bold text-xs";
-                document.getElementById("audio-btn").innerText = "التنبيه الصوتي مفعل ✅";
-            });
-        }
-
-        // قراءة الطلبات المخزنة محلياً
-        function loadAdminOrders() {
-            const orders = JSON.parse(localStorage.getItem('kitchen_orders') || '[]');
-            const container = document.getElementById('admin-orders-list');
-
-            if(orders.length === 0) {
-                container.innerHTML = `<p class="text-gray-500 col-span-full text-center py-12">لا توجد طلبات جديدة حالياً</p>`;
-                return;
-            }
-
-            container.innerHTML = orders.map((ord, idx) => `
-                <div class="bg-gray-800 border border-gray-700 rounded-xl p-4 flex flex-col justify-between">
-                    <div>
-                        <div class="flex justify-between items-center border-b border-gray-700 pb-2 mb-3">
-                            <span class="font-black text-red-400">طلب #${ord.id}</span>
-                            <span class="text-xs bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded font-bold">${ord.status}</span>
-                        </div>
-                        <div class="text-xs text-gray-300 space-y-1 mb-3">
-                            <p>👤 <strong>الزبون:</strong> ${ord.name} (${ord.phone})</p>
-                            <p>📍 <strong>العنوان:</strong> ${ord.address}</p>
-                            <p>💳 <strong>الدفع:</strong> ${ord.payment}</p>
-                        </div>
-                        <div class="bg-gray-900/50 p-2 rounded-lg space-y-1 mb-3 text-xs">
-                            ${ord.items.map(i => `
-                                <div class="flex justify-between">
-                                    <span>${i.name} x${i.qty}</span>
-                                    <span class="font-bold">${i.price} د.ع</span>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                    
-                    <div class="space-y-2 pt-2 border-t border-gray-700">
-                        <select onchange="updateOrderStatus(${idx}, this.value)" class="w-full bg-gray-700 text-xs rounded p-2 text-white">
-                            <option value="قيد الانتظار ⏳" ${ord.status.includes('الانتظار')?'selected':''}>⏳ قيد الانتظار</option>
-                            <option value="قيد التحضير 🍳" ${ord.status.includes('التحضير')?'selected':''}>🍳 قيد التحضير</option>
-                            <option value="خرج للتوصيل 🛵" ${ord.status.includes('التوصيل')?'selected':''}>🛵 خرج للتوصيل</option>
-                            <option value="تم التسليم ✅" ${ord.status.includes('التسليم')?'selected':''}>✅ تم التسليم</option>
-                        </select>
-                        <button onclick="printThermalReceipt(${idx})" class="w-full bg-gray-700 hover:bg-gray-600 text-white text-xs py-2 rounded-lg font-bold flex items-center justify-center gap-1">
-                            <i class="fa-solid fa-print"></i> طباعة الفاتورة
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function updateOrderStatus(index, newStatus) {
-            let orders = JSON.parse(localStorage.getItem('kitchen_orders') || '[]');
-            orders[index].status = newStatus;
-            localStorage.setItem('kitchen_orders', JSON.stringify(orders));
-            loadAdminOrders();
-        }
-
-        function printThermalReceipt(index) {
-            let orders = JSON.parse(localStorage.getItem('kitchen_orders') || '[]');
-            const ord = orders[index];
-
-            document.getElementById('p-date').innerText = new Date().toLocaleString('ar-IQ');
-            document.getElementById('p-name').innerText = ord.name;
-            document.getElementById('p-phone').innerText = ord.phone;
-            document.getElementById('p-address').innerText = ord.address;
-            document.getElementById('p-total').innerText = ord.total + " د.ع";
-
-            document.getElementById('p-items').innerHTML = ord.items.map(i => `
-                <div class="flex justify-between">
-                    <span>${i.name} x${i.qty}</span>
-                    <span>${i.price}</span>
-                </div>
-            `).join('');
-
-            window.print();
-        }
-
-        setInterval(loadAdminOrders, 3000);
-        loadAdminOrders();
+        // تشغيل عرض لوحة التحكم عند فتح الصفحة
+        document.addEventListener("DOMContentLoaded", () => {
+            if (typeof renderAdminPage === "function") renderAdminPage();
+        });
     </script>
 </body>
 </html>
