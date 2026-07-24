@@ -1,261 +1,227 @@
-// ==========================================
-// 1. الإعدادات العامة ورقم الواتساب
-// ==========================================
-const RESTAURANT_PHONE = "9647838021664";
+// --- إعدادات المطبح ---
+// ضع إحداثيات موقعك في البصرة هنا لضمان الحساب الدقيق للمسافة
+const KITCHEN_LAT = 30.5086; // خط العرض للمطبخ
+const KITCHEN_LNG = 47.7804; // خط الطول للمطبخ
 
-// القائمة الافتراضية للوجبات
-const defaultMenu = [
-    {
-        id: 1,
-        name: "برغر لحم دبل تشيز",
-        category: "برغر",
-        price: 7500,
-        description: "شريحتين لحم بلدي مع الجبن الصافي والصوص الخاص.",
-        image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300",
-        isAvailable: true
-    },
-    {
-        id: 2,
-        name: "برغر دجاج مقرمش",
-        category: "برغر",
-        price: 6000,
-        description: "صدر دجاج مقرمش مع خس وصوص المايونيز.",
-        image: "https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?w=300",
-        isAvailable: true
-    },
-    {
-        id: 3,
-        name: "بطاطا بالجبن (تشيز فرايز)",
-        category: "مقبلات",
-        price: 3500,
-        description: "بطاطس مقرمشة مغطاة بصوص الشيدر الذائب.",
-        image: "https://images.unsplash.com/photo-1576107232684-1279f3908594?w=300",
-        isAvailable: false
-    }
-];
-
-// جلب الوجبات المخزنة
-function getMenu() {
-    const saved = localStorage.getItem("restaurant_menu");
-    if (!saved) {
-        localStorage.setItem("restaurant_menu", JSON.stringify(defaultMenu));
-        return defaultMenu;
-    }
-    return JSON.parse(saved);
-}
-
-// حفظ الوجبات
-function saveMenu(menu) {
-    localStorage.setItem("restaurant_menu", JSON.stringify(menu));
-}
-
+let menuData = JSON.parse(localStorage.getItem('zad_menu')) || [];
 let cart = [];
+let deliveryFee = 0;
+let userLocationLink = "";
 
-// ==========================================
-// 2. عرض المنيو للزبون (index.html)
-// ==========================================
-document.addEventListener("DOMContentLoaded", () => {
-    if (document.getElementById("menu-items")) {
-        renderCategories();
-        renderUserMenu();
-    }
+// عند تحميل الصفحة
+document.addEventListener('DOMContentLoaded', () => {
+    renderCategories();
+    renderMenu('الكل');
 });
 
+// عرض الأقسام
 function renderCategories() {
-    const menu = getMenu();
-    const categories = ["الكل", ...new Set(menu.map(i => i.category))];
-    const container = document.getElementById("categories-container");
-    if (!container) return;
-
-    container.innerHTML = categories.map(cat => `
-        <button onclick="filterCategory('${cat}')" class="px-4 py-1.5 rounded-full border border-stone-700 text-xs font-bold whitespace-nowrap bg-stone-900 text-gray-200 hover:border-[#c59d5f] hover:text-[#c59d5f] transition">
-            ${cat}
-        </button>
-    `).join('');
+    const categoriesContainer = document.getElementById('categories-container');
+    const categories = ['الكل', ...new Set(menuData.map(item => item.category))];
+    
+    categoriesContainer.innerHTML = categories.map(cat => 
+        `<button class="cat-btn ${cat === 'الكل' ? 'active' : ''}" onclick="filterCategory('${cat}', this)">${cat}</button>`
+    ).join('');
 }
 
-function filterCategory(cat) {
-    const menu = getMenu();
-    if (cat === "الكل") renderUserMenu(menu);
-    else renderUserMenu(menu.filter(i => i.category === cat));
+// تصفية الأقسام
+function filterCategory(category, btnElement) {
+    if(btnElement) {
+        document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+        btnElement.classList.add('active');
+    }
+    renderMenu(category);
 }
 
-function renderUserMenu(items = getMenu()) {
-    const container = document.getElementById("menu-items");
-    if (!container) return;
+// عرض الوجبات
+function renderMenu(category) {
+    const menuContainer = document.getElementById('menu-container');
+    const filteredData = category === 'الكل' ? menuData : menuData.filter(item => item.category === category);
 
-    container.innerHTML = items.map(item => `
-        <div class="bg-stone-900 p-3.5 rounded-xl shadow-lg border border-stone-800 flex gap-3 items-center ${!item.isAvailable ? 'opacity-60' : ''}">
-            <img src="${item.image || 'https://via.placeholder.com/100'}" class="w-20 h-20 rounded-lg object-cover border border-stone-700">
-            <div class="flex-1">
-                <div class="flex justify-between items-start">
-                    <h3 class="font-bold text-sm text-white">${item.name}</h3>
-                    ${!item.isAvailable ? '<span class="text-[10px] bg-red-900/80 text-red-200 border border-red-700 px-2 py-0.5 rounded font-bold">نفدت الكمية</span>' : ''}
-                </div>
-                <p class="text-xs text-gray-400 my-1 line-clamp-2">${item.description || ''}</p>
-                <div class="flex justify-between items-center mt-2">
-                    <span class="font-black text-[#c59d5f] text-sm">${item.price.toLocaleString()} د.ع</span>
-                    ${item.isAvailable ? `
-                        <button onclick="addToCart(${item.id})" class="bg-[#c59d5f] text-black px-3 py-1 rounded-lg text-xs font-bold hover:bg-[#b0894c] transition">
-                            + إضافة
-                        </button>
-                    ` : '<span class="text-xs text-gray-500 font-bold">غير متوفر</span>'}
+    if (filteredData.length === 0) {
+        menuContainer.innerHTML = `<p style="text-align:center; padding: 20px;">لا توجد وجبات في هذا القسم حالياً.</p>`;
+        return;
+    }
+
+    menuContainer.innerHTML = filteredData.map(item => `
+        <div class="meal-card">
+            <img src="${item.image}" alt="${item.name}" class="meal-img" onerror="this.src='https://via.placeholder.com/150'">
+            <div class="meal-details">
+                <h3>${item.name}</h3>
+                <p class="meal-desc">${item.desc || ''}</p>
+                <div class="meal-bottom">
+                    <span class="meal-price">${Number(item.price).toLocaleString()} د.ع</span>
+                    <button class="add-btn" onclick="addToCart('${item.name}', ${item.price})">+ إضافة</button>
                 </div>
             </div>
         </div>
     `).join('');
 }
 
-// ==========================================
-// 3. إدارة السلة والطلب
-// ==========================================
-function addToCart(id) {
-    const menu = getMenu();
-    const item = menu.find(i => i.id === id);
-    if (!item) return;
-
-    const inCart = cart.find(c => c.id === id);
-    if (inCart) {
-        inCart.qty++;
+// إضافة للسلة
+function addToCart(name, price) {
+    const existing = cart.find(item => item.name === name);
+    if (existing) {
+        existing.qty++;
     } else {
-        cart.push({ ...item, qty: 1 });
+        cart.push({ name, price, qty: 1 });
     }
     updateCartUI();
 }
 
+// تحديث الواجهة السفلية للسلة
 function updateCartUI() {
-    const totalCount = cart.reduce((acc, i) => acc + i.qty, 0);
-    const subtotal = cart.reduce((acc, i) => acc + (i.price * i.qty), 0);
+    const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
 
-    const countElem = document.getElementById("cart-count");
-    const totalElem = document.getElementById("cart-total");
-
-    if (countElem) countElem.innerText = totalCount;
-    if (totalElem) totalElem.innerText = subtotal.toLocaleString();
-
-    const list = document.getElementById("cart-items-list");
-    if (list) {
-        list.innerHTML = cart.map(i => `
-            <div class="flex justify-between items-center py-2.5 text-white">
-                <div>
-                    <h4 class="font-bold text-xs text-white">${i.name}</h4>
-                    <span class="text-xs text-[#c59d5f]">${(i.price * i.qty).toLocaleString()} د.ع</span>
-                </div>
-                <div class="flex items-center gap-2 border border-stone-700 rounded-lg px-2 py-1 bg-stone-800">
-                    <button onclick="changeQty(${i.id}, -1)" class="text-red-400 font-bold px-1">-</button>
-                    <span class="text-xs font-bold text-white">${i.qty}</span>
-                    <button onclick="changeQty(${i.id}, 1)" class="text-green-400 font-bold px-1">+</button>
-                </div>
-            </div>
-        `).join('');
-    }
+    document.getElementById('cart-count').innerText = totalItems;
+    document.getElementById('cart-total-price').innerText = (subtotal + deliveryFee).toLocaleString();
 }
 
-function changeQty(id, delta) {
-    const idx = cart.findIndex(i => i.id === id);
-    if (idx > -1) {
-        cart[idx].qty += delta;
-        if (cart[idx].qty <= 0) cart.splice(idx, 1);
+// فتح نافذة السلة
+function openCartModal() {
+    if (cart.length === 0) {
+        alert("السلة فارغة! اختر بعض الوجبات أولاً.");
+        return;
+    }
+    document.getElementById('cart-modal').style.display = 'flex';
+    renderCartModal();
+}
+
+function closeCartModal() {
+    document.getElementById('cart-modal').style.display = 'none';
+}
+
+// عرض مكونات السلة والحساب
+function renderCartModal() {
+    const cartItemsList = document.getElementById('cart-items');
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+
+    cartItemsList.innerHTML = cart.map((item, index) => `
+        <div class="cart-item-row">
+            <span>${item.name}</span>
+            <div class="qty-controls">
+                <button onclick="changeQty(${index}, -1)">-</button>
+                <span>${item.qty}</span>
+                <button onclick="changeQty(${index}, 1)">+</button>
+            </div>
+            <span>${(item.price * item.qty).toLocaleString()} د.ع</span>
+        </div>
+    `).join('');
+
+    document.getElementById('subtotal-price').innerText = subtotal.toLocaleString();
+    document.getElementById('delivery-price').innerText = deliveryFee.toLocaleString();
+    document.getElementById('final-total-price').innerText = (subtotal + deliveryFee).toLocaleString();
+}
+
+function changeQty(index, delta) {
+    cart[index].qty += delta;
+    if (cart[index].qty <= 0) {
+        cart.splice(index, 1);
+    }
+    if (cart.length === 0) {
+        closeCartModal();
     }
     updateCartUI();
+    renderCartModal();
 }
 
-function toggleCartModal(show) {
-    const modal = document.getElementById("cart-modal");
-    if (modal) modal.classList.toggle("hidden", !show);
+// --- دالة حساب المسافة بالـ GPS والتوصيل ---
+function calculateDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371; // نصف قطر الأرض بالكيلومترات
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = 
+        Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+        Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c; 
 }
 
-function sendOrderToWhatsApp(e) {
-    e.preventDefault();
-    if (cart.length === 0) return alert("السلة فارغة!");
+function getCurrentLocation() {
+    const status = document.getElementById('location-status');
 
-    const name = document.getElementById("cust-name").value;
-    const phone = document.getElementById("cust-phone").value;
-    const address = document.getElementById("cust-address").value;
+    if (!navigator.geolocation) {
+        status.innerText = "متصفحك لا يدعم خدمة الـ GPS.";
+        return;
+    }
 
-    let msg = `*طلب جديد من مطبخ زاد* 🍽️🛵\n\n`;
-    msg += `*الزبون:* ${name}\n`;
-    msg += `*الهاتف:* ${phone}\n`;
-    msg += `*العنوان:* ${address}\n\n`;
-    msg += `*الطلبات:*\n`;
+    status.innerText = "⏳ جاري تحديد موقعك الجغرافي...";
 
-    cart.forEach((i, idx) => {
-        msg += `${idx+1}. ${i.name} x${i.qty} = ${(i.price * i.qty).toLocaleString()} د.ع\n`;
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+            const userLat = position.coords.latitude;
+            const userLng = position.coords.longitude;
+            
+            userLocationLink = `https://www.google.com/maps?q=${userLat},${userLng}`;
+
+            const distance = calculateDistance(KITCHEN_LAT, KITCHEN_LNG, userLat, userLng);
+
+            // احتساب سعر التوصيل حسب الشروط المطلوب
+            if (distance <= 7) {
+                deliveryFee = 1000;
+            } else if (distance <= 10) {
+                deliveryFee = 2000;
+            } else { // أكثر من 10 كم (شاملة أكثر من 13 كم)
+                deliveryFee = 3000;
+            }
+
+            status.innerHTML = `✅ تم تحديد الموقع! (المسافة: ${distance.toFixed(1)} كم)`;
+            
+            updateCartUI();
+            renderCartModal();
+        },
+        (error) => {
+            status.innerText = "❌ تعذر الحصول على الموقع. يرجى تفعيل الـ GPS في الهاتف والسماح للمتصفح الوصول للموقع.";
+        }
+    );
+}
+
+// إرسال الطلب عبر الواتساب
+function sendOrderToWhatsApp() {
+    const name = document.getElementById('cust-name').value.trim();
+    const phone = document.getElementById('cust-phone').value.trim();
+    const notes = document.getElementById('cust-notes').value.trim();
+
+    if (!name || !phone) {
+        alert("يرجى كتابة الاسم ورقم الهاتف لإكمال الطلب.");
+        return;
+    }
+
+    if (deliveryFee === 0 && !userLocationLink) {
+        if (!confirm("لم تقم بتحديد موقعك عبر الـ GPS لتحديد سعر التوصيل، هل تريد الاستمرار؟")) {
+            return;
+        }
+    }
+
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    const finalTotal = subtotal + deliveryFee;
+
+    let message = `🍔 *طلب جديد من مطبخ زاد* 🍔\n\n`;
+    message += `👤 *الاسم:* ${name}\n`;
+    message += `📞 *الهاتف:* ${phone}\n\n`;
+    message += `📝 *تفاصيل الطلب:*\n`;
+
+    cart.forEach(item => {
+        message += `• ${item.name} (${item.qty}) = ${(item.price * item.qty).toLocaleString()} د.ع\n`;
     });
 
-    const total = cart.reduce((acc, i) => acc + (i.price * i.qty), 0);
-    msg += `\n*الإجمالي:* ${total.toLocaleString()} د.ع`;
+    message += `\n💰 *مجموع الوجبات:* ${subtotal.toLocaleString()} د.ع\n`;
+    message += `🛵 *أجور التوصيل:* ${deliveryFee.toLocaleString()} د.ع\n`;
+    message += `💵 *المجموع الكلي:* ${finalTotal.toLocaleString()} د.ع\n\n`;
 
-    window.open(`https://wa.me/${RESTAURANT_PHONE}?text=${encodeURIComponent(msg)}`, '_blank');
-}
-
-// ==========================================
-// 4. وظائف لوحة التحكم (admin.html)
-// ==========================================
-function renderAdminPage() {
-    const menu = getMenu();
-    const list = document.getElementById("admin-items-list");
-    if (!list) return;
-
-    list.innerHTML = menu.map(item => `
-        <div class="border border-stone-300 p-3 rounded-lg flex flex-col sm:flex-row justify-between items-center gap-3 bg-gray-50">
-            <div class="flex items-center gap-3 w-full sm:w-auto">
-                <img src="${item.image || 'https://via.placeholder.com/60'}" class="w-12 h-12 rounded object-cover">
-                <div>
-                    <h4 class="font-bold text-sm text-gray-900">${item.name}</h4>
-                    <span class="text-xs text-gray-500">${item.category} | ${item.price.toLocaleString()} د.ع</span>
-                </div>
-            </div>
-            
-            <div class="flex gap-2 w-full sm:w-auto justify-end">
-                <button onclick="toggleAvailability(${item.id})" class="px-3 py-1 rounded text-xs font-bold ${item.isAvailable ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
-                    ${item.isAvailable ? 'متوفر ✅' : 'غير متوفر ❌'}
-                </button>
-                <button onclick="deleteItem(${item.id})" class="bg-red-600 text-white px-3 py-1 rounded text-xs font-bold">
-                    حذف 🗑️
-                </button>
-            </div>
-        </div>
-    `).join('');
-}
-
-function addNewItem(e) {
-    e.preventDefault();
-    const menu = getMenu();
-    
-    const newItem = {
-        id: Date.now(),
-        name: document.getElementById("new-name").value,
-        price: parseFloat(document.getElementById("new-price").value),
-        category: document.getElementById("new-category").value,
-        image: document.getElementById("new-image").value || "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300",
-        description: document.getElementById("new-desc").value || "",
-        isAvailable: true
-    };
-
-    menu.push(newItem);
-    saveMenu(menu);
-    
-    renderAdminPage();
-    e.target.reset();
-    alert("تمت إضافة الوجبة بنجاح إلى المنيو!");
-}
-
-function toggleAvailability(id) {
-    const menu = getMenu();
-    const item = menu.find(i => i.id === id);
-    if (item) {
-        item.isAvailable = !item.isAvailable;
-        saveMenu(menu);
-        renderAdminPage();
+    if (userLocationLink) {
+        message += `📍 *موقع التوصيل على الخريطة:* \n${userLocationLink}\n\n`;
     }
-}
 
-function deleteItem(id) {
-    if (confirm("هل أنت تأكد من حذف هذه الوجبة؟")) {
-        let menu = getMenu();
-        menu = menu.filter(i => i.id !== id);
-        saveMenu(menu);
-        renderAdminPage();
+    if (notes) {
+        message += `📌 *ملاحظات العنوان:* ${notes}\n`;
     }
+
+    // رقم هاتف المطبخ (قم بتعديل الرقم للرقم الخاص بك)
+    const whatsappPhone = "9647700000000"; 
+    const encodedMessage = encodeURIComponent(message);
+    
+    window.open(`https://wa.me/${whatsappPhone}?text=${encodedMessage}`, '_blank');
 }
