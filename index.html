@@ -12,7 +12,7 @@
     <!-- رأس الصفحة -->
     <header class="header">
         <div class="logo-container">
-            <img src="logo.png" alt="مطبخ زاد" class="logo">
+            <img src="logo.png" alt="مطبخ زاد" class="logo" onerror="this.src='logo.jpg'">
         </div>
         <h1>مطبخ زاد</h1>
         <p class="sub-title">ريزو • كرسبي • برغر • غداء عراقي</p>
@@ -22,11 +22,14 @@
     <div class="categories-bar">
         <button class="cat-btn active" onclick="filterCategory('الكل')">الكل</button>
         <button class="cat-btn" onclick="filterCategory('ريزو')">ريزو</button>
+        <button class="cat-btn" onclick="filterCategory('كريسبي')">كريسبي</button>
+        <button class="cat-btn" onclick="filterCategory('برغر')">برغر</button>
+        <button class="cat-btn" onclick="filterCategory('غداء عراقي')">غداء عراقي</button>
     </div>
 
     <!-- قائمة الطعام -->
     <main class="menu-container" id="menuContainer">
-        <!-- يتم جلب الوجبات برمجياً من ملف app.js -->
+        <!-- يتم جلب الوجبات برمجياً -->
     </main>
 
     <!-- شريط السلة السفلي -->
