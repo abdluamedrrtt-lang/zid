@@ -28,33 +28,12 @@
         <!-- يتم تحميل الوجبات هنا عبر JavaScript -->
     </main>
 
-    <!-- قسم آراء وتقييمات الزبائن التفاعلي -->
+    <!-- قسم عرض تقييمات الزبائن فقط -->
     <section class="reviews-section" style="padding: 20px; background: #1a1a1a; margin: 20px 10px 80px 10px; border-radius: 12px; border: 1px solid #333;">
         <h3 style="color: #ff9800; text-align: center; margin-bottom: 15px;">⭐ آراء زبائن مطبخ زاد ⭐</h3>
         
-        <!-- قائمة عرض التقييمات -->
-        <div id="reviews-list" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+        <div id="reviews-list" style="display: flex; flex-direction: column; gap: 10px;">
             <!-- تظهر التقييمات هنا -->
-        </div>
-
-        <!-- نموذج إضافة تقييم جديد -->
-        <div style="background: #252525; padding: 15px; border-radius: 8px; border: 1px solid #444;">
-            <h4 style="color: #fff; margin-bottom: 10px; font-size: 15px;">✍️ أضف تقييمك ورأيك بالأكل:</h4>
-            <form id="add-review-form">
-                <input type="text" id="rev-name" placeholder="اسمك الكريم" required style="width: 100%; padding: 10px; margin-bottom: 8px; background: #1a1a1a; border: 1px solid #444; color: #fff; border-radius: 6px; box-sizing: border-box; font-family: 'Tajawal', sans-serif;">
-                
-                <select id="rev-stars" style="width: 100%; padding: 10px; margin-bottom: 8px; background: #1a1a1a; border: 1px solid #444; color: #ffc107; border-radius: 6px; box-sizing: border-box; font-family: 'Tajawal', sans-serif;">
-                    <option value="⭐⭐⭐⭐⭐">⭐⭐⭐⭐⭐ (ممتاز جداً)</option>
-                    <option value="⭐⭐⭐⭐">⭐⭐⭐⭐ (جيد جداً)</option>
-                    <option value="⭐⭐⭐">⭐⭐⭐ (جيد)</option>
-                    <option value="⭐⭐">⭐⭐ (مقبول)</option>
-                    <option value="⭐">⭐ (سيء)</option>
-                </select>
-
-                <textarea id="rev-comment" placeholder="رأيك بالطعم والنظافة والتوصيل..." required style="width: 100%; padding: 10px; margin-bottom: 8px; background: #1a1a1a; border: 1px solid #444; color: #fff; border-radius: 6px; box-sizing: border-box; font-family: 'Tajawal', sans-serif;"></textarea>
-
-                <button type="submit" style="width: 100%; background: #ff9800; color: #000; font-weight: bold; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-family: 'Tajawal', sans-serif;">نشر التقييم 🌟</button>
-            </form>
         </div>
     </section>
 
@@ -101,7 +80,32 @@
         </div>
     </div>
 
-    <!-- كود تشغيل التقييمات -->
+    <!-- نافذة التقييم المنبثقة (تظهر بعد الطلب فقط) -->
+    <div id="review-modal" class="modal" style="display: none;">
+        <div class="modal-content" style="text-align: center;">
+            <span class="close-btn" onclick="closeReviewModal()">&times;</span>
+            <h2 style="color: #ff9800;">🎉 شكراً لطلبك من مطبخ زاد!</h2>
+            <p style="color: #ccc; margin-bottom: 15px;">يسعدنا أن تترك لنا تقييمك ورأيك بالخدمة:</p>
+            
+            <form id="post-order-review-form">
+                <input type="text" id="rev-name" placeholder="اسمك الكريم" required style="width: 100%; padding: 10px; margin-bottom: 8px; background: #252525; border: 1px solid #444; color: #fff; border-radius: 6px; box-sizing: border-box; font-family: 'Tajawal', sans-serif;">
+                
+                <select id="rev-stars" style="width: 100%; padding: 10px; margin-bottom: 8px; background: #252525; border: 1px solid #444; color: #ffc107; border-radius: 6px; box-sizing: border-box; font-family: 'Tajawal', sans-serif;">
+                    <option value="⭐⭐⭐⭐⭐">⭐⭐⭐⭐⭐ (ممتاز جداً)</option>
+                    <option value="⭐⭐⭐⭐">⭐⭐⭐⭐ (جيد جداً)</option>
+                    <option value="⭐⭐⭐">⭐⭐⭐ (جيد)</option>
+                    <option value="⭐⭐">⭐⭐ (مقبول)</option>
+                    <option value="⭐">⭐ (سيء)</option>
+                </select>
+
+                <textarea id="rev-comment" placeholder="رأيك بالطعم والنظافة والتوصيل..." required style="width: 100%; padding: 10px; margin-bottom: 12px; background: #252525; border: 1px solid #444; color: #fff; border-radius: 6px; box-sizing: border-box; font-family: 'Tajawal', sans-serif;"></textarea>
+
+                <button type="submit" style="width: 100%; background: #28a745; color: #fff; font-weight: bold; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-family: 'Tajawal', sans-serif;">نشر التقييم 🌟</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript التقييمات -->
     <script>
         const defaultReviews = [
             { name: "علي الحسين", stars: "⭐⭐⭐⭐⭐", comment: "الريزو عاشت ايدكم طعم روعة والتوصيل سريع جداً!" },
@@ -124,7 +128,11 @@
             `).join('');
         }
 
-        document.getElementById('add-review-form')?.addEventListener('submit', function(e) {
+        function closeReviewModal() {
+            document.getElementById('review-modal').style.display = 'none';
+        }
+
+        document.getElementById('post-order-review-form')?.addEventListener('submit', function(e) {
             e.preventDefault();
             const name = document.getElementById('rev-name').value.trim();
             const stars = document.getElementById('rev-stars').value;
@@ -133,8 +141,8 @@
             reviewsData.unshift({ name, stars, comment });
             localStorage.setItem('zad_reviews', JSON.stringify(reviewsData));
             
-            alert('✅ شكراً لك! تم إضافة تقييمك بنجاح.');
-            this.reset();
+            alert('✅ شكراً جزيلاً لتقييمك!');
+            closeReviewModal();
             displayReviews();
         });
 
