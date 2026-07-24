@@ -5,161 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مطبخ زاد | ZAD Kitchen</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- خط جوال أو خط عربي مناسب -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <!-- الهيدر واللوجو -->
+    <!-- رأس الصفحة -->
     <header class="header">
         <div class="logo-container">
-            <img src="logo.png" alt="مطبخ زاد" class="logo-img">
-            <h1>مطبخ زاد</h1>
-            <p>ريزو • كرسبي • برغر • غداء عراقي</p>
+            <img src="logo.jpg" alt="مطبخ زاد" class="logo">
         </div>
+        <h1>مطبخ زاد</h1>
+        <p class="sub-title">ريزو • كرسبي • برغر • غداء عراقي</p>
     </header>
 
-    <!-- أقسام المنيو -->
-    <nav class="categories" id="categories-container">
+    <!-- تصفية الأقسام -->
+    <div class="categories-bar">
         <button class="cat-btn active" onclick="filterCategory('الكل')">الكل</button>
-    </nav>
-
-    <!-- قائمة الوجبات -->
-    <main class="menu-container" id="menu-container">
-        <!-- يتم تحميل الوجبات هنا عبر JavaScript -->
-    </main>
-
-    <!-- قسم عرض تقييمات الزبائن فقط (بدون صندوق الإضافة) -->
-    <section class="reviews-section" style="padding: 20px; background: #1a1a1a; margin: 20px 10px 80px 10px; border-radius: 12px; border: 1px solid #333;">
-        <h3 style="color: #ff9800; text-align: center; margin-bottom: 15px;">⭐ آراء زبائن مطبخ زاد ⭐</h3>
-        
-        <div id="reviews-list" style="display: flex; flex-direction: column; gap: 10px;">
-            <!-- تظهر التقييمات هنا -->
-        </div>
-    </section>
-
-    <!-- شريط السلة السفلي -->
-    <div class="cart-bar" onclick="openCartModal()">
-        <button class="view-cart-btn">
-            🛒 عرض السلة ( <span id="cart-count">0</span> )
-        </button>
-        <div class="cart-total-preview">
-            إجمالي الحساب: <br>
-            <span id="cart-total-price">0</span> د.ع
-        </div>
+        <button class="cat-btn" onclick="filterCategory('ريزو')">ريزو</button>
+        <!-- يمكنك إضافة باقي الأقسام هنا -->
     </div>
 
-    <!-- نافذة السلة والطلب (Modal) -->
-    <div id="cart-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeCartModal()">&times;</span>
-            <h2>🛒 سلة الطلبات</h2>
-            
-            <div id="cart-items" class="cart-items-list"></div>
-
-            <div class="location-box">
-                <button type="button" class="gps-btn" onclick="getCurrentLocation()">
-                    📍 تحديد موقعي للطلب (GPS)
-                </button>
-                <p id="location-status" class="status-text"></p>
-            </div>
-
-            <div class="checkout-summary">
-                <p>مجموع الوجبات: <span id="subtotal-price">0</span> د.ع</p>
-                <p>أجور التوصيل: <span id="delivery-price">0</span> د.ع</p>
-                <hr>
-                <h3>المجموع الكلي: <span id="final-total-price">0</span> د.ع</h3>
-            </div>
-
-            <div class="customer-info">
-                <input type="text" id="cust-name" placeholder="الاسم الكامل" required>
-                <input type="tel" id="cust-phone" placeholder="رقم الهاتف" required>
-                <textarea id="cust-notes" placeholder="ملاحظات إضافية (أقرب نقطة دالة، تفاصيل العنوان...)"></textarea>
-            </div>
-
-            <button class="send-order-btn" onclick="sendOrderToWhatsApp()">📲 إرسال الطلب عبر الواتساب</button>
-        </div>
-    </div>
-
-    <!-- نافذة التقييم المنبثقة (تظهر بعد الطلب فقط) -->
-    <div id="review-modal" class="modal" style="display: none;">
-        <div class="modal-content" style="text-align: center;">
-            <span class="close-btn" onclick="closeReviewModal()">&times;</span>
-            <h2 style="color: #ff9800;">🎉 شكراً لطلبك من مطبخ زاد!</h2>
-            <p style="color: #ccc; margin-bottom: 15px;">يسعدنا أن تترك لنا تقييمك ورأيك بالخدمة:</p>
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مطبخ زاد | ZAD Kitchen</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
-</head>
-<body>
-
-    <!-- الهيدر واللوجو -->
-    <header class="header">
-        <div class="logo-container">
-            <img src="logo.png" alt="مطبخ زاد" class="logo-img">
-            <h1>مطبخ زاد</h1>
-            <p>ريزو • كرسبي • برغر • غداء عراقي</p>
-        </div>
-    </header>
-
-    <!-- أقسام المنيو -->
-    <nav class="categories" id="categories-container">
-        <button class="cat-btn active" onclick="filterCategory('الكل')">الكل</button>
-    </nav>
-
-    <!-- قائمة الوجبات -->
-    <main class="menu-container" id="menu-container">
-        <!-- يتم تحميل الوجبات هنا عبر JavaScript -->
+    <!-- قائمة الطعام -->
+    <main class="menu-container" id="menuContainer">
+        <!-- يتم جلب الوجبات برمجياً من ملف app.js -->
     </main>
 
     <!-- شريط السلة السفلي -->
-    <div class="cart-bar" onclick="openCartModal()">
-        <button class="view-cart-btn">
-            🛒 عرض السلة ( <span id="cart-count">0</span> )
+    <div class="cart-bar">
+        <div class="cart-info">
+            إجمالي الحساب: <span id="totalPrice">0</span> د.ع
+        </div>
+        <button class="cart-btn" onclick="openCart()">
+            🛒 عرض السلة (<span id="cartCount">0</span>)
         </button>
-        <div class="cart-total-preview">
-            إجمالي الحساب: <br>
-            <span id="cart-total-price">0</span> د.ع
-        </div>
-    </div>
-
-    <!-- نافذة السلة والطلب (Modal) -->
-    <div id="cart-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeCartModal()">&times;</span>
-            <h2>🛒 سلة الطلبات</h2>
-            
-            <div id="cart-items" class="cart-items-list"></div>
-
-            <div class="location-box">
-                <button type="button" class="gps-btn" onclick="getCurrentLocation()">
-                    📍 تحديد موقعي للطلب (GPS)
-                </button>
-                <p id="location-status" class="status-text"></p>
-            </div>
-
-            <div class="checkout-summary">
-                <p>مجموع الوجبات: <span id="subtotal-price">0</span> د.ع</p>
-                <p>أجور التوصيل: <span id="delivery-price">0</span> د.ع</p>
-                <hr>
-                <h3>المجموع الكلي: <span id="final-total-price">0</span> د.ع</h3>
-            </div>
-
-            <div class="customer-info">
-                <input type="text" id="cust-name" placeholder="الاسم الكامل" required>
-                <input type="tel" id="cust-phone" placeholder="رقم الهاتف" required>
-                <textarea id="cust-notes" placeholder="ملاحظات إضافية (أقرب نقطة دالة، تفاصيل العنوان...)"></textarea>
-            </div>
-
-            <button class="send-order-btn" onclick="sendOrderToWhatsApp()">📲 إرسال الطلب عبر الواتساب</button>
-        </div>
     </div>
 
     <script src="app.js"></script>
 </body>
 </html>
-
