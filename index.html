@@ -4,78 +4,75 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مطبخ زاد | ZAD Kitchen</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
-    <style>
-        .gold-color { color: #c59d5f; }
-        .bg-gold { background-color: #c59d5f; }
-        .border-gold { border-color: #c59d5f; }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
-<body class="bg-black text-white pb-28 font-sans">
+<body>
 
-    <!-- الهيدر مع الشعار -->
-    <header class="bg-stone-900 border-b border-[#c59d5f]/40 p-5 text-center shadow-2xl sticky top-0 z-30">
-        <div class="flex flex-col items-center justify-center gap-2">
-            <img src="logo.png" alt="مطبخ زاد" class="h-20 w-auto rounded-full border-2 border-[#c59d5f] p-1 shadow-lg">
-            <h1 class="text-2xl font-black text-[#c59d5f] tracking-wide">مطبخ زاد</h1>
-            <p class="text-xs text-gray-300 font-medium">ريزو • كرسبي • برغر • غداء عراقي</p>
+    <!-- الهيدر واللوجو -->
+    <header class="header">
+        <div class="logo-container">
+            <img src="https://files.catbox.moe/k4btrv.jpeg" alt="مطبخ زاد" class="logo-img">
+            <h1>مطبخ زاد</h1>
+            <p>ريزو • كرسبي • برغر • غداء عراقي</p>
         </div>
     </header>
 
     <!-- أقسام المنيو -->
-    <div class="bg-stone-950 border-b border-stone-800 sticky top-[148px] z-20">
-        <div class="flex overflow-x-auto gap-2 p-3 no-scrollbar max-w-2xl mx-auto" id="categories-container"></div>
-    </div>
+    <nav class="categories" id="categories-container">
+        <button class="cat-btn active" onclick="filterCategory('الكل')">الكل</button>
+    </nav>
 
     <!-- قائمة الوجبات -->
-    <main class="max-w-2xl mx-auto px-4 mt-6">
-        <div class="grid grid-cols-1 gap-4" id="menu-items"></div>
+    <main class="menu-container" id="menu-container">
+        <!-- يتم تحميل الوجبات هنا عبر JavaScript -->
     </main>
 
-    <!-- الشريط السفلي للسلة -->
-    <div class="fixed bottom-0 left-0 right-0 bg-stone-900 border-t border-[#c59d5f]/40 p-4 shadow-2xl z-40">
-        <div class="max-w-2xl mx-auto flex justify-between items-center">
-            <div>
-                <span class="text-xs text-gray-400 font-bold block">إجمالي الحساب:</span>
-                <span class="text-xl font-black text-[#c59d5f]"><span id="cart-total">0</span> د.ع</span>
-            </div>
-            <button onclick="toggleCartModal(true)" class="bg-[#c59d5f] hover:bg-[#b0894c] text-black px-6 py-3 rounded-xl font-black flex items-center gap-2 shadow-lg transition">
-                <i class="fa-solid fa-basket-shopping"></i>
-                عرض السلة (<span id="cart-count">0</span>)
-            </button>
+    <!-- شريط السلة السفلي -->
+    <div class="cart-bar" onclick="openCartModal()">
+        <button class="view-cart-btn">
+            🛒 عرض السلة ( <span id="cart-count">0</span> )
+        </button>
+        <div class="cart-total-preview">
+            إجمالي الحساب: <br>
+            <span id="cart-total-price">0</span> د.ع
         </div>
     </div>
 
-    <!-- نافذة السلة -->
-    <div id="cart-modal" class="fixed inset-0 bg-black/80 hidden z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm">
-        <div class="bg-stone-900 text-white w-full max-w-lg rounded-t-3xl sm:rounded-2xl p-5 border border-[#c59d5f]/30 max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center border-b border-stone-800 pb-3">
-                <h3 class="text-lg font-bold text-[#c59d5f]">تفاصيل الطلب</h3>
-                <button onclick="toggleCartModal(false)" class="text-gray-400 hover:text-white text-2xl">&times;</button>
+    <!-- نافذة السلة والطلب (Modal) -->
+    <div id="cart-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeCartModal()">&times;</span>
+            <h2>🛒 سلة الطلبات</h2>
+            
+            <div id="cart-items" class="cart-items-list">
+                <!-- تفاصيل الوجبات المختارة -->
             </div>
 
-            <div id="cart-items-list" class="my-4 divide-y divide-stone-800"></div>
-
-            <form onsubmit="sendOrderToWhatsApp(event)" class="space-y-3">
-                <div>
-                    <label class="block text-xs font-bold text-gray-300">الاسم الكامل *</label>
-                    <input type="text" id="cust-name" required class="w-full bg-stone-800 border border-stone-700 rounded-lg p-2.5 text-sm mt-1 focus:border-[#c59d5f] outline-none text-white" placeholder="أدخل اسمك">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-300">رقم الهاتف *</label>
-                    <input type="tel" id="cust-phone" required class="w-full bg-stone-800 border border-stone-700 rounded-lg p-2.5 text-sm mt-1 focus:border-[#c59d5f] outline-none text-white" placeholder="07XXXXXXXX">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-300">العنوان بالتفصيل *</label>
-                    <input type="text" id="cust-address" required class="w-full bg-stone-800 border border-stone-700 rounded-lg p-2.5 text-sm mt-1 focus:border-[#c59d5f] outline-none text-white" placeholder="المنطقة، الشارع، أقرب نقطة دالة">
-                </div>
-
-                <button type="submit" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold flex justify-center items-center gap-2 hover:bg-green-700 mt-4 shadow-lg">
-                    <i class="fa-brands fa-whatsapp text-xl"></i> إرسال الطلب عبر الواتساب
+            <!-- تحديد الموقع الجغرافي وحساب التوصيل -->
+            <div class="location-box">
+                <button type="button" class="gps-btn" onclick="getCurrentLocation()">
+                    📍 تحديد موقعي للطلب (GPS)
                 </button>
-            </form>
+                <p id="location-status" class="status-text"></p>
+            </div>
+
+            <!-- المجموع وأجور التوصيل -->
+            <div class="checkout-summary">
+                <p>مجموع الوجبات: <span id="subtotal-price">0</span> د.ع</p>
+                <p>أجور التوصيل: <span id="delivery-price">0</span> د.ع</p>
+                <hr>
+                <h3>المجموع الكلي: <span id="final-total-price">0</span> د.ع</h3>
+            </div>
+
+            <!-- معلومات الزبون -->
+            <div class="customer-info">
+                <input type="text" id="cust-name" placeholder="الاسم الكامل" required>
+                <input type="tel" id="cust-phone" placeholder="رقم الهاتف" required>
+                <textarea id="cust-notes" placeholder="ملاحظات إضافية (أقرب نقطة دالة، تفاصيل العنوان...)"></textarea>
+            </div>
+
+            <button class="send-order-btn" onclick="sendOrderToWhatsApp()">📲 إرسال الطلب عبر الواتساب</button>
         </div>
     </div>
 
