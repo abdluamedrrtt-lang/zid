@@ -1,19 +1,10 @@
 // --- إعدادات مطبخ زاد (البصرة) ---
-const KITCHEN_LAT = 30.5085; // خط العرض للمطبخ
-const KITCHEN_LNG = 47.7803; // خط الطول للمطبخ
+const KITCHEN_LAT = 30.5085;
+const KITCHEN_LNG = 47.7803;
 
-// الوجبات الأساسية للظهور المباشر لجميع الزبائن
-const defaultMenu = [
-    {
-        name: "ريزو كرانشي",
-        price: 6000,
-        category: "ريزو",
-        image: "https://files.catbox.moe/k4btrv.jpeg",
-        desc: "قطع دجاج كرانشي مقرمشة مع أرز الريزو المميز والصوص الخاص"
-    }
-];
+// لا توجد وجبات افتراضية
+const defaultMenu = [];
 
-// دمج الوجبات الأساسية مع الوجبات المضافة محلياً
 let localMenu = JSON.parse(localStorage.getItem('zad_menu')) || [];
 let menuData = [...defaultMenu, ...localMenu];
 
@@ -21,13 +12,11 @@ let cart = [];
 let deliveryFee = 0;
 let userLocationLink = "";
 
-// عند تحميل الصفحة
 document.addEventListener('DOMContentLoaded', () => {
     renderCategories();
     renderMenu('الكل');
 });
 
-// عرض الأقسام
 function renderCategories() {
     const categoriesContainer = document.getElementById('categories-container');
     if (!categoriesContainer) return;
@@ -39,7 +28,6 @@ function renderCategories() {
     ).join('');
 }
 
-// تصفية الأقسام
 function filterCategory(category, btnElement) {
     if(btnElement) {
         document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
@@ -48,7 +36,6 @@ function filterCategory(category, btnElement) {
     renderMenu(category);
 }
 
-// عرض الوجبات
 function renderMenu(category) {
     const menuContainer = document.getElementById('menu-container');
     if (!menuContainer) return;
@@ -75,7 +62,6 @@ function renderMenu(category) {
     `).join('');
 }
 
-// إضافة للسلة
 function addToCart(name, price) {
     const existing = cart.find(item => item.name === name);
     if (existing) {
@@ -86,7 +72,6 @@ function addToCart(name, price) {
     updateCartUI();
 }
 
-// تحديث الواجهة السفلية للسلة
 function updateCartUI() {
     const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
     const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
@@ -98,7 +83,6 @@ function updateCartUI() {
     if (cartTotalPrice) cartTotalPrice.innerText = (subtotal + deliveryFee).toLocaleString();
 }
 
-// فتح نافذة السلة
 function openCartModal() {
     if (cart.length === 0) {
         alert("السلة فارغة! اختر بعض الوجبات أولاً.");
@@ -112,7 +96,6 @@ function closeCartModal() {
     document.getElementById('cart-modal').style.display = 'none';
 }
 
-// عرض مكونات السلة والحساب
 function renderCartModal() {
     const cartItemsList = document.getElementById('cart-items');
     const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
@@ -148,9 +131,8 @@ function changeQty(index, delta) {
     renderCartModal();
 }
 
-// --- دالة حساب المسافة بالـ GPS والتوصيل ---
 function calculateDistance(lat1, lon1, lat2, lon2) {
-    const R = 6371; // نصف قطر الأرض بالكيلومترات
+    const R = 6371;
     const dLat = (lat2 - lat1) * Math.PI / 180;
     const dLon = (lon2 - lon1) * Math.PI / 180;
     const a = 
@@ -180,7 +162,6 @@ function getCurrentLocation() {
 
             const distance = calculateDistance(KITCHEN_LAT, KITCHEN_LNG, userLat, userLng);
 
-            // احتساب سعر التوصيل
             if (distance <= 7) {
                 deliveryFee = 1000;
             } else if (distance <= 10) {
@@ -200,7 +181,6 @@ function getCurrentLocation() {
     );
 }
 
-// إرسال الطلب عبر الواتساب
 function sendOrderToWhatsApp() {
     const name = document.getElementById('cust-name').value.trim();
     const phone = document.getElementById('cust-phone').value.trim();
@@ -241,7 +221,6 @@ function sendOrderToWhatsApp() {
         message += `📌 *ملاحظات العنوان:* ${notes}\n`;
     }
 
-    // رقمك المخصص لاستلام الطلبات
     const whatsappPhone = "9647838021664"; 
 
     const encodedMessage = encodeURIComponent(message);
