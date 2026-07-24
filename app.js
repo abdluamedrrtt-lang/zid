@@ -68,7 +68,7 @@ function renderCategories() {
     if (!container) return;
 
     container.innerHTML = categories.map(cat => `
-        <button onclick="filterCategory('${cat}')" class="px-4 py-1.5 rounded-full border text-xs font-bold whitespace-nowrap bg-gray-50 text-gray-700 hover:bg-red-600 hover:text-white transition">
+        <button onclick="filterCategory('${cat}')" class="px-4 py-1.5 rounded-full border border-stone-700 text-xs font-bold whitespace-nowrap bg-stone-900 text-gray-200 hover:border-[#c59d5f] hover:text-[#c59d5f] transition">
             ${cat}
         </button>
     `).join('');
@@ -85,21 +85,21 @@ function renderUserMenu(items = getMenu()) {
     if (!container) return;
 
     container.innerHTML = items.map(item => `
-        <div class="bg-white p-3 rounded-xl shadow-sm border flex gap-3 items-center ${!item.isAvailable ? 'opacity-50' : ''}">
-            <img src="${item.image || 'https://via.placeholder.com/100'}" class="w-20 h-20 rounded-lg object-cover">
+        <div class="bg-stone-900 p-3.5 rounded-xl shadow-lg border border-stone-800 flex gap-3 items-center ${!item.isAvailable ? 'opacity-60' : ''}">
+            <img src="${item.image || 'https://via.placeholder.com/100'}" class="w-20 h-20 rounded-lg object-cover border border-stone-700">
             <div class="flex-1">
-                <div class="flex justify-between">
-                    <h3 class="font-bold text-sm">${item.name}</h3>
-                    ${!item.isAvailable ? '<span class="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded font-bold">نفدت الكمية</span>' : ''}
+                <div class="flex justify-between items-start">
+                    <h3 class="font-bold text-sm text-white">${item.name}</h3>
+                    ${!item.isAvailable ? '<span class="text-[10px] bg-red-900/80 text-red-200 border border-red-700 px-2 py-0.5 rounded font-bold">نفدت الكمية</span>' : ''}
                 </div>
-                <p class="text-xs text-gray-500 my-1 line-clamp-1">${item.description || ''}</p>
+                <p class="text-xs text-gray-400 my-1 line-clamp-2">${item.description || ''}</p>
                 <div class="flex justify-between items-center mt-2">
-                    <span class="font-black text-red-600 text-sm">${item.price.toLocaleString()} د.ع</span>
+                    <span class="font-black text-[#c59d5f] text-sm">${item.price.toLocaleString()} د.ع</span>
                     ${item.isAvailable ? `
-                        <button onclick="addToCart(${item.id})" class="bg-red-50 text-red-600 border border-red-200 px-3 py-1 rounded-lg text-xs font-bold hover:bg-red-600 hover:text-white">
+                        <button onclick="addToCart(${item.id})" class="bg-[#c59d5f] text-black px-3 py-1 rounded-lg text-xs font-bold hover:bg-[#b0894c] transition">
                             + إضافة
                         </button>
-                    ` : '<span class="text-xs text-gray-400">غير متوفر</span>'}
+                    ` : '<span class="text-xs text-gray-500 font-bold">غير متوفر</span>'}
                 </div>
             </div>
         </div>
@@ -136,15 +136,15 @@ function updateCartUI() {
     const list = document.getElementById("cart-items-list");
     if (list) {
         list.innerHTML = cart.map(i => `
-            <div class="flex justify-between items-center py-2">
+            <div class="flex justify-between items-center py-2.5 text-white">
                 <div>
-                    <h4 class="font-bold text-xs">${i.name}</h4>
-                    <span class="text-xs text-red-600">${(i.price * i.qty).toLocaleString()} د.ع</span>
+                    <h4 class="font-bold text-xs text-white">${i.name}</h4>
+                    <span class="text-xs text-[#c59d5f]">${(i.price * i.qty).toLocaleString()} د.ع</span>
                 </div>
-                <div class="flex items-center gap-2 border rounded-lg px-2 py-1">
-                    <button onclick="changeQty(${i.id}, -1)" class="text-red-600 font-bold">-</button>
-                    <span class="text-xs font-bold">${i.qty}</span>
-                    <button onclick="changeQty(${i.id}, 1)" class="text-green-600 font-bold">+</button>
+                <div class="flex items-center gap-2 border border-stone-700 rounded-lg px-2 py-1 bg-stone-800">
+                    <button onclick="changeQty(${i.id}, -1)" class="text-red-400 font-bold px-1">-</button>
+                    <span class="text-xs font-bold text-white">${i.qty}</span>
+                    <button onclick="changeQty(${i.id}, 1)" class="text-green-400 font-bold px-1">+</button>
                 </div>
             </div>
         `).join('');
@@ -173,7 +173,7 @@ function sendOrderToWhatsApp(e) {
     const phone = document.getElementById("cust-phone").value;
     const address = document.getElementById("cust-address").value;
 
-    let msg = `*طلب جديد من المطبخ* 🍔🛵\n\n`;
+    let msg = `*طلب جديد من مطبخ زاد* 🍽️🛵\n\n`;
     msg += `*الزبون:* ${name}\n`;
     msg += `*الهاتف:* ${phone}\n`;
     msg += `*العنوان:* ${address}\n\n`;
@@ -198,11 +198,11 @@ function renderAdminPage() {
     if (!list) return;
 
     list.innerHTML = menu.map(item => `
-        <div class="border p-3 rounded-lg flex flex-col sm:flex-row justify-between items-center gap-3 bg-gray-50">
+        <div class="border border-stone-300 p-3 rounded-lg flex flex-col sm:flex-row justify-between items-center gap-3 bg-gray-50">
             <div class="flex items-center gap-3 w-full sm:w-auto">
                 <img src="${item.image || 'https://via.placeholder.com/60'}" class="w-12 h-12 rounded object-cover">
                 <div>
-                    <h4 class="font-bold text-sm">${item.name}</h4>
+                    <h4 class="font-bold text-sm text-gray-900">${item.name}</h4>
                     <span class="text-xs text-gray-500">${item.category} | ${item.price.toLocaleString()} د.ع</span>
                 </div>
             </div>
@@ -236,7 +236,6 @@ function addNewItem(e) {
     menu.push(newItem);
     saveMenu(menu);
     
-    // إعادة تحديث العرض في لوحة التحكم
     renderAdminPage();
     e.target.reset();
     alert("تمت إضافة الوجبة بنجاح إلى المنيو!");
