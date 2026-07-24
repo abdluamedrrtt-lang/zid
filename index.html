@@ -3,160 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>المنيو الإلكتروني التفاعلي</title>
-    <!-- Tailwind CSS -->
+    <title>مطبخ زاد | ZAD Kitchen</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+    <style>
+        .gold-color { color: #c59d5f; }
+        .bg-gold { background-color: #c59d5f; }
+        .border-gold { border-color: #c59d5f; }
+    </style>
 </head>
-<body class="bg-gray-100 text-gray-800 pb-28">
+<body class="bg-stone-950 text-gray-100 pb-28 font-sans">
 
-    <!-- Header / رأس الصفحة -->
-    <header class="bg-red-600 text-white p-5 text-center shadow-lg sticky top-0 z-30">
-        <h1 class="text-2xl font-black">مطعم المطبخ السحابي 🍔</h1>
-        <p class="text-xs opacity-90 mt-1">أشهى الوجبات الواصلة لباك لحد الباب 🛵</p>
-        
-        <!-- شريط البحث السريع -->
-        <div class="mt-3 relative max-w-md mx-auto">
-            <input type="text" id="search-input" oninput="handleSearch()" placeholder="ابحث عن وجبة..." 
-                class="w-full pl-4 pr-10 py-2 rounded-full text-gray-800 text-sm focus:outline-none shadow-inner">
-            <i class="fa-solid fa-magnifying-glass absolute right-3 top-2.5 text-gray-400"></i>
+    <!-- الهيدر مع الشعار واللون الذهبي والأسود -->
+    <header class="bg-black/90 border-b border-[#c59d5f]/30 p-5 text-center shadow-2xl sticky top-0 z-30 backdrop-blur-md">
+        <div class="flex flex-col items-center justify-center gap-2">
+            <!-- الشعار -->
+            <img src="logo.png" alt="مطبخ زاد" class="h-20 w-auto rounded-full border-2 border-[#c59d5f] p-1 shadow-lg">
+            <h1 class="text-2xl font-black text-[#c59d5f] tracking-wide">مطبخ زاد</h1>
+            <p class="text-xs text-gray-400 font-medium">ريزو • كرسبي • برغر • غداء عراقي</p>
         </div>
     </header>
 
-    <!-- الأقسام الأفقية / Categories -->
-    <div class="bg-white shadow-sm sticky top-[108px] z-20">
+    <!-- أقسام المنيو -->
+    <div class="bg-black/50 border-b border-stone-800 sticky top-[148px] z-20 backdrop-blur-sm">
         <div class="flex overflow-x-auto gap-2 p-3 no-scrollbar max-w-2xl mx-auto" id="categories-container"></div>
     </div>
 
-    <!-- قائمة الوجبات / Menu -->
-    <main class="max-w-2xl mx-auto px-4 mt-4">
+    <!-- قائمة الوجبات -->
+    <main class="max-w-2xl mx-auto px-4 mt-6">
         <div class="grid grid-cols-1 gap-4" id="menu-items"></div>
     </main>
 
-    <!-- شريط السلة العائم السفلي -->
-    <div class="fixed bottom-0 left-0 right-0 bg-white border-t p-4 shadow-2xl z-40">
+    <!-- الشريط السفلي للسلة -->
+    <div class="fixed bottom-0 left-0 right-0 bg-black/95 border-t border-[#c59d5f]/40 p-4 shadow-2xl z-40 backdrop-blur-lg">
         <div class="max-w-2xl mx-auto flex justify-between items-center">
             <div>
-                <span class="text-xs text-gray-500 font-bold block">إجمالي الحساب:</span>
-                <span class="text-xl font-black text-red-600"><span id="cart-total">0</span> د.ع</span>
+                <span class="text-xs text-gray-400 font-bold block">إجمالي الحساب:</span>
+                <span class="text-xl font-black text-[#c59d5f]"><span id="cart-total">0</span> د.ع</span>
             </div>
-            <button onclick="toggleCartModal(true)" class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 shadow-md">
+            <button onclick="toggleCartModal(true)" class="bg-[#c59d5f] hover:bg-[#b0894c] text-black px-6 py-3 rounded-xl font-black flex items-center gap-2 shadow-lg transition">
                 <i class="fa-solid fa-basket-shopping"></i>
                 عرض السلة (<span id="cart-count">0</span>)
             </button>
         </div>
     </div>
 
-    <!-- النافذة المنبثقة 1: تخصيص الوجبة (Modals / Options) -->
-    <div id="customize-modal" class="fixed inset-0 bg-black/60 hidden z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-        <div class="bg-white w-full max-w-lg rounded-t-3xl sm:rounded-2xl p-5 max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center border-b pb-3">
-                <h3 class="text-lg font-bold" id="cust-item-title">تخصيص الوجبة</h3>
-                <button onclick="closeCustomizeModal()" class="text-gray-400 text-2xl">&times;</button>
+    <!-- نافذة السلة -->
+    <div id="cart-modal" class="fixed inset-0 bg-black/80 hidden z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm">
+        <div class="bg-stone-900 text-gray-100 w-full max-w-lg rounded-t-3xl sm:rounded-2xl p-5 border border-[#c59d5f]/30 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-stone-800 pb-3">
+                <h3 class="text-lg font-bold text-[#c59d5f]">تفاصيل الطلب</h3>
+                <button onclick="toggleCartModal(false)" class="text-gray-400 hover:text-white text-2xl">&times;</button>
             </div>
 
-            <div class="py-3 space-y-4">
-                <!-- الحجم -->
-                <div id="sizes-section">
-                    <label class="block text-sm font-bold text-gray-700 mb-2">اختر الحجم:</label>
-                    <div class="space-y-2" id="sizes-container"></div>
-                </div>
+            <div id="cart-items-list" class="my-4 divide-y divide-stone-800"></div>
 
-                <!-- إضافات مدفوعة -->
-                <div id="addons-section">
-                    <label class="block text-sm font-bold text-gray-700 mb-2">إضافات مدفوعة:</label>
-                    <div class="space-y-2" id="addons-container"></div>
-                </div>
-
-                <!-- حذف مكونات -->
-                <div id="removals-section">
-                    <label class="block text-sm font-bold text-gray-700 mb-2">بدون مكونات معينة؟</label>
-                    <div class="grid grid-cols-2 gap-2" id="removals-container"></div>
-                </div>
-
-                <!-- ملاحظة خاصة -->
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">ملاحظة خاصة بالوجبة:</label>
-                    <input type="text" id="item-note" placeholder="مثلاً: صوص حار زيادة" class="w-full border rounded-lg p-2 text-sm focus:outline-red-500">
-                </div>
-            </div>
-
-            <button onclick="confirmAddToCart()" class="w-full bg-red-600 text-white py-3 rounded-xl font-bold mt-2 hover:bg-red-700">
-                إضافة للسلة بـ <span id="custom-price">0</span> د.ع
-            </button>
-        </div>
-    </div>
-
-    <!-- النافذة المنبثقة 2: السلة والدفع (Checkout) -->
-    <div id="cart-modal" class="fixed inset-0 bg-black/60 hidden z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-        <div class="bg-white w-full max-w-lg rounded-t-3xl sm:rounded-2xl p-5 max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center border-b pb-3">
-                <h3 class="text-lg font-bold">تفاصيل الطلب والتوصيل</h3>
-                <button onclick="toggleCartModal(false)" class="text-gray-400 text-2xl">&times;</button>
-            </div>
-
-            <!-- عناصر السلة -->
-            <div id="cart-items-list" class="my-4 divide-y"></div>
-
-            <!-- حساب التوصيل -->
-            <div class="bg-gray-50 p-3 rounded-xl mb-4 space-y-1 text-sm border">
-                <div class="flex justify-between">
-                    <span class="text-gray-600">المجموع الفرعي:</span>
-                    <span class="font-bold"><span id="subtotal-price">0</span> د.ع</span>
-                </div>
-                <div class="flex justify-between">
-                    <span class="text-gray-600">أجور التوصيل:</span>
-                    <span class="font-bold text-green-600" id="delivery-price">حسب المنطقة</span>
-                </div>
-            </div>
-
-            <!-- نموذج بيانات الزبون -->
             <form onsubmit="sendOrderToWhatsApp(event)" class="space-y-3">
                 <div>
-                    <label class="block text-xs font-bold text-gray-700">الاسم الكامل *</label>
-                    <input type="text" id="cust-name" required class="w-full border rounded-lg p-2 text-sm mt-1 focus:outline-red-500" placeholder="أدخل اسمك">
+                    <label class="block text-xs font-bold text-gray-300">الاسم الكامل *</label>
+                    <input type="text" id="cust-name" required class="w-full bg-stone-800 border border-stone-700 rounded-lg p-2.5 text-sm mt-1 focus:border-[#c59d5f] outline-none text-white" placeholder="أدخل اسمك">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-gray-700">رقم الهاتف *</label>
-                    <input type="tel" id="cust-phone" required class="w-full border rounded-lg p-2 text-sm mt-1 focus:outline-red-500" placeholder="07XXXXXXXX">
+                    <label class="block text-xs font-bold text-gray-300">رقم الهاتف *</label>
+                    <input type="tel" id="cust-phone" required class="w-full bg-stone-800 border border-stone-700 rounded-lg p-2.5 text-sm mt-1 focus:border-[#c59d5f] outline-none text-white" placeholder="07XXXXXXXX">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-gray-700">منطقة التوصيل *</label>
-                    <select id="cust-region" onchange="updateDeliveryFee()" required class="w-full border rounded-lg p-2 text-sm mt-1 bg-white focus:outline-red-500">
-                        <option value="">اختر المنطقة...</option>
-                        <option value="المركز" data-fee="2000">المركز (2,000 د.ع)</option>
-                        <option value="أطراف المدينة" data-fee="3500">أطراف المدينة (3,500 د.ع)</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-gray-700">العنوان بالتفصيل *</label>
-                    <input type="text" id="cust-address" required class="w-full border rounded-lg p-2 text-sm mt-1 focus:outline-red-500" placeholder="أقرب نقطة دالة، الشارع...">
+                    <label class="block text-xs font-bold text-gray-300">العنوان بالتفصيل *</label>
+                    <input type="text" id="cust-address" required class="w-full bg-stone-800 border border-stone-700 rounded-lg p-2.5 text-sm mt-1 focus:border-[#c59d5f] outline-none text-white" placeholder="المنطقة، الشارع، أقرب نقطة دالة">
                 </div>
 
-                <!-- تحديد GPS -->
-                <div>
-                    <button type="button" onclick="getGPSLocation()" class="w-full bg-blue-50 text-blue-600 border border-blue-200 py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-2 hover:bg-blue-100">
-                        <i class="fa-solid fa-location-crosshairs"></i> <span id="gps-status">إرفاق موقعي الحالي عبر GPS</span>
-                    </button>
-                </div>
-
-                <!-- طريقة الدفع -->
-                <div>
-                    <label class="block text-xs font-bold text-gray-700 mb-1">طريقة الدفع *</label>
-                    <div class="grid grid-cols-2 gap-2 text-xs">
-                        <label class="border p-2 rounded-lg flex items-center gap-2 cursor-pointer bg-gray-50">
-                            <input type="radio" name="payment" value="دفع عند الاستلام" checked> دفع عند الاستلام
-                        </label>
-                        <label class="border p-2 rounded-lg flex items-center gap-2 cursor-pointer bg-gray-50">
-                            <input type="radio" name="payment" value="زين كاش / إلكتروني"> زين كاش / إلكتروني
-                        </label>
-                    </div>
-                </div>
-
-                <button type="submit" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold flex justify-center items-center gap-2 hover:bg-green-700 shadow-md">
-                    <i class="fa-brands fa-whatsapp text-xl"></i> تأكيد الطلب عبر الواتساب
+                <button type="submit" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold flex justify-center items-center gap-2 hover:bg-green-700 mt-4 shadow-lg">
+                    <i class="fa-brands fa-whatsapp text-xl"></i> إرسال الطلب عبر الواتساب
                 </button>
             </form>
         </div>
