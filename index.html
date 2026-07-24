@@ -86,69 +86,80 @@
             <span class="close-btn" onclick="closeReviewModal()">&times;</span>
             <h2 style="color: #ff9800;">🎉 شكراً لطلبك من مطبخ زاد!</h2>
             <p style="color: #ccc; margin-bottom: 15px;">يسعدنا أن تترك لنا تقييمك ورأيك بالخدمة:</p>
-            
-            <form id="post-order-review-form">
-                <input type="text" id="rev-name" placeholder="اسمك الكريم" required style="width: 100%; padding: 10px; margin-bottom: 8px; background: #252525; border: 1px solid #444; color: #fff; border-radius: 6px; box-sizing: border-box; font-family: 'Tajawal', sans-serif;">
-                
-                <select id="rev-stars" style="width: 100%; padding: 10px; margin-bottom: 8px; background: #252525; border: 1px solid #444; color: #ffc107; border-radius: 6px; box-sizing: border-box; font-family: 'Tajawal', sans-serif;">
-                    <option value="⭐⭐⭐⭐⭐">⭐⭐⭐⭐⭐ (ممتاز جداً)</option>
-                    <option value="⭐⭐⭐⭐">⭐⭐⭐⭐ (جيد جداً)</option>
-                    <option value="⭐⭐⭐">⭐⭐⭐ (جيد)</option>
-                    <option value="⭐⭐">⭐⭐ (مقبول)</option>
-                    <option value="⭐">⭐ (سيء)</option>
-                </select>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مطبخ زاد | ZAD Kitchen</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
 
-                <textarea id="rev-comment" placeholder="رأيك بالطعم والنظافة والتوصيل..." required style="width: 100%; padding: 10px; margin-bottom: 12px; background: #252525; border: 1px solid #444; color: #fff; border-radius: 6px; box-sizing: border-box; font-family: 'Tajawal', sans-serif;"></textarea>
+    <!-- الهيدر واللوجو -->
+    <header class="header">
+        <div class="logo-container">
+            <img src="logo.png" alt="مطبخ زاد" class="logo-img">
+            <h1>مطبخ زاد</h1>
+            <p>ريزو • كرسبي • برغر • غداء عراقي</p>
+        </div>
+    </header>
 
-                <button type="submit" style="width: 100%; background: #28a745; color: #fff; font-weight: bold; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-family: 'Tajawal', sans-serif;">نشر التقييم 🌟</button>
-            </form>
+    <!-- أقسام المنيو -->
+    <nav class="categories" id="categories-container">
+        <button class="cat-btn active" onclick="filterCategory('الكل')">الكل</button>
+    </nav>
+
+    <!-- قائمة الوجبات -->
+    <main class="menu-container" id="menu-container">
+        <!-- يتم تحميل الوجبات هنا عبر JavaScript -->
+    </main>
+
+    <!-- شريط السلة السفلي -->
+    <div class="cart-bar" onclick="openCartModal()">
+        <button class="view-cart-btn">
+            🛒 عرض السلة ( <span id="cart-count">0</span> )
+        </button>
+        <div class="cart-total-preview">
+            إجمالي الحساب: <br>
+            <span id="cart-total-price">0</span> د.ع
         </div>
     </div>
 
-    <!-- JavaScript التقييمات -->
-    <script>
-        const defaultReviews = [
-            { name: "علي الحسين", stars: "⭐⭐⭐⭐⭐", comment: "الريزو عاشت ايدكم طعم روعة والتوصيل سريع جداً!" },
-            { name: "أحمد الشمري", stars: "⭐⭐⭐⭐⭐", comment: "الأكل وصل ساخن والكرانشي مقرمش درجة أولى." }
-        ];
-
-        let reviewsData = JSON.parse(localStorage.getItem('zad_reviews')) || defaultReviews;
-
-        function displayReviews() {
-            const list = document.getElementById('reviews-list');
-            if(!list) return;
-            list.innerHTML = reviewsData.map(r => `
-                <div style="background: #252525; padding: 12px; border-radius: 8px;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                        <strong style="color: #fff;">${r.name}</strong>
-                        <span style="color: #ffc107;">${r.stars}</span>
-                    </div>
-                    <p style="color: #ccc; font-size: 14px; margin: 0;">${r.comment}</p>
-                </div>
-            `).join('');
-        }
-
-        function closeReviewModal() {
-            document.getElementById('review-modal').style.display = 'none';
-        }
-
-        document.getElementById('post-order-review-form')?.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const name = document.getElementById('rev-name').value.trim();
-            const stars = document.getElementById('rev-stars').value;
-            const comment = document.getElementById('rev-comment').value.trim();
-
-            reviewsData.unshift({ name, stars, comment });
-            localStorage.setItem('zad_reviews', JSON.stringify(reviewsData));
+    <!-- نافذة السلة والطلب (Modal) -->
+    <div id="cart-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeCartModal()">&times;</span>
+            <h2>🛒 سلة الطلبات</h2>
             
-            alert('✅ شكراً جزيلاً لتقييمك!');
-            closeReviewModal();
-            displayReviews();
-        });
+            <div id="cart-items" class="cart-items-list"></div>
 
-        displayReviews();
-    </script>
+            <div class="location-box">
+                <button type="button" class="gps-btn" onclick="getCurrentLocation()">
+                    📍 تحديد موقعي للطلب (GPS)
+                </button>
+                <p id="location-status" class="status-text"></p>
+            </div>
+
+            <div class="checkout-summary">
+                <p>مجموع الوجبات: <span id="subtotal-price">0</span> د.ع</p>
+                <p>أجور التوصيل: <span id="delivery-price">0</span> د.ع</p>
+                <hr>
+                <h3>المجموع الكلي: <span id="final-total-price">0</span> د.ع</h3>
+            </div>
+
+            <div class="customer-info">
+                <input type="text" id="cust-name" placeholder="الاسم الكامل" required>
+                <input type="tel" id="cust-phone" placeholder="رقم الهاتف" required>
+                <textarea id="cust-notes" placeholder="ملاحظات إضافية (أقرب نقطة دالة، تفاصيل العنوان...)"></textarea>
+            </div>
+
+            <button class="send-order-btn" onclick="sendOrderToWhatsApp()">📲 إرسال الطلب عبر الواتساب</button>
+        </div>
+    </div>
 
     <script src="app.js"></script>
 </body>
 </html>
+
