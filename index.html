@@ -12,7 +12,6 @@
     <!-- الهيدر واللوجو -->
     <header class="header">
         <div class="logo-container">
-            <!-- ضع هنا رابط صورة اللوجو المخصص للمطبخ -->
             <img src="logo.png" alt="مطبخ زاد" class="logo-img">
             <h1>مطبخ زاد</h1>
             <p>ريزو • كرسبي • برغر • غداء عراقي</p>
@@ -28,6 +27,31 @@
     <main class="menu-container" id="menu-container">
         <!-- يتم تحميل الوجبات هنا عبر JavaScript -->
     </main>
+
+    <!-- قسم آراء وتقييمات الزبائن -->
+    <section class="reviews-section" style="padding: 20px; background: #1a1a1a; margin: 20px 10px 80px 10px; border-radius: 12px; border: 1px solid #333;">
+        <h3 style="color: #ff9800; text-align: center; margin-bottom: 15px;">⭐ آراء زبائن مطبخ زاد ⭐</h3>
+        
+        <div class="reviews-container" style="display: flex; flex-direction: column; gap: 10px;">
+            <!-- تقييم 1 -->
+            <div class="review-card" style="background: #252525; padding: 12px; border-radius: 8px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <strong style="color: #fff;">علي الحسين</strong>
+                    <span style="color: #ffc107;">⭐⭐⭐⭐⭐</span>
+                </div>
+                <p style="color: #ccc; font-size: 14px; margin: 0;">الريزو عاشت ايدكم طعم روعة والتوصيل سريع جداً!</p>
+            </div>
+
+            <!-- تقييم 2 -->
+            <div class="review-card" style="background: #252525; padding: 12px; border-radius: 8px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <strong style="color: #fff;">أحمد الشمري</strong>
+                    <span style="color: #ffc107;">⭐⭐⭐⭐⭐</span>
+                </div>
+                <p style="color: #ccc; font-size: 14px; margin: 0;">الأكل وصل ساخن والكرانشي مقرمش درجة أولى.</p>
+            </div>
+        </div>
+    </section>
 
     <!-- شريط السلة السفلي -->
     <div class="cart-bar" onclick="openCartModal()">
